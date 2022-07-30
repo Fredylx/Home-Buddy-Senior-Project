@@ -1,0 +1,197 @@
+
+
+var HTMLDoc = "\
+   <HTML>\
+	<HEAD>\
+	 <SCRIPT>\
+        function init() {\
+           setTimeout(reloadPage, 1000);\
+        }\
+        function reloadPage() {\
+           window.location.reload(true);\
+        }\
+     </SCRIPT>\
+    </HEAD>\
+    <BODY onload='init();'>\
+      <P>Processing...</P>\
+    </BODY>\
+  </HTML>";
+var HTML_top = '<HTML>\
+  <HEAD>\
+    <TITLE>Home Buddy Reporter</TITLE>\
+    <STYLE>\
+        #container{\
+          width:100%;\
+          background-color: gold;\
+        }\
+        #header{\
+          width:100%;\
+          background-color: teal;\
+          color: #40E0D0;\
+        }\
+        #data{\
+          color: #00000;\
+        }\
+        #door{\
+          width:100%;\
+          background-color: teal;\
+        }\
+    </STYLE>\
+    <SCRIPT>\
+        function init() {\
+           setTimeout(reloadPage, 1000);\
+        }\
+        function reloadPage() {\
+           window.location.reload(true);\
+        }\
+    </SCRIPT>\
+  </HEAD>\
+  <BODY onload="init();" bgcolor="#00CED1">\
+  	<DIV ID="container">\
+           <DIV ID="header"><h1>Home Buddy Reporter</h1></DIV>\
+           <DIV ID="data">';
+
+//Similarly, the bottom portion of the html page is stored in another variable because it's also static.
+var HTML_bottom = "</DIV></DIV></DIV></BODY></HTML>";
+
+function setup() {
+	HTTPServer.route("/", function(url, res) {
+		Serial.println("Request for /");
+		res.send(updateHTML());
+	});
+
+	HTTPServer.route("/test", function(url, res) {
+		Serial.println("Request for /test");
+		res.setContentType("text/plain");
+		res.send("test content");
+	});
+	
+	HTTPServer.route("/file", function(url, res) {
+		Serial.println("Request for /file");
+		res.sendFile("/test.txt");
+	});
+
+	// wild card
+	HTTPServer.route("/*", function(url, res) {
+		Serial.println("Request for " + url);
+		res.send("hello world");
+	});
+
+	// start server on port 80
+	HTTPServer.start(80);
+
+	// write a file
+	var file = FileSystem.open('/test.txt',
+		File.WRITE | File.READ | File.APPEND);
+	file.println("hello text");
+	file.close();
+}
+
+
+// The updateHTML() function generates the HTML seen by the web client.
+// The page is generated dynamically to represent the status of the garage door.
+// Notice that the updateHTML() function is invoke every time loop() updates the status of the door.
+function updateHTML() {
+	var file = FileSystem.open('/d', File.READ);
+	var g1 = file.readln();
+	console.log("file contents read is:",g1);
+	file.close();
+	
+	var g1_div="";
+	
+	// The test below edits the HTML page to be displayed accordingly to the door state.
+	if (g1 > 0) {
+		g1_div = '<div id="door"><p style="background-color:#00CED1;">Are Your Ready? Remeber You can Press and hold the RED buttom to start your work out.</p></div>';
+		delay(2000);
+		g1_div = '<div id="door"><p style="background-color:#00CED1;">You are Currently on your work out</p></div>';
+		delay(2000);
+		g1_div = '<div id="door"><p style="background-color:#00CED1;">Remeber when doing pushups, go SLOW when going down and FAST when going up</p></div>';
+		delay(20000);
+		g1_div = '<div id="door"><p style="background-color:#00CED1;">Take deep breaths when going DOWN and fast breaths when going UP</p></div>';
+		delay(20000);
+		g1_div = '<div id="door"><p style="background-color:#00CED1;">Brace your core.</p></div>';
+		delay(20000);
+		g1_div = '<div id="door"><p style="background-color:#00CED1;">Squeeze your glutes.</p></div>';
+		delay(20000);
+		g1_div = '<div id="door"><p style="background-color:#00CED1;">Pack your elbows.  "Stack" yout elbows under your shoulders (for your shoulder health)</p></div>';
+		delay(20000);
+		g1_div = '<div id="door"><p style="background-color:#00CED1;">Grip the floor.</p></div>';
+		delay(20000);
+		g1_div = '<div id="door"><p style="background-color:#00CED1;">Remeber to drink water.</p></div>';
+		delay(20000);
+		g1_div = '<div id="door"><p style="background-color:#00CED1;">Make sure to maintain a neutral spine and neck.</p></div>';
+		delay(20000);
+		g1_div = '<div id="door"><p style="background-color:#00CED1;">When doing planks it is important to to flex every muscle in your body. With extra emphasis on your abd, lower back and glutes.</p></div>';
+		delay(20000);
+		g1_div = '<div id="door"><p style="background-color:#00CED1;">Do not sink into your shoulders</p></div>';
+		delay(20000);
+		g1_div = '<div id="door"><p style="background-color:#00CED1;">You are doing great!</p></div>';
+		delay(20000);
+		g1_div = '<div id="door"><p style="background-color:#00CED1;">Breath slow and steady. Do not hold your breath.</p></div>';
+		delay(20000);
+		g1_div = '<div id="door"><p style="background-color:#00CED1;">Keep Your Back Straight when doing Push Ups. Think planks but with your arms moving.</p></div>';
+		delay(20000);
+		g1_div = '<div id="door"><p style="background-color:#00CED1;">Push the ground away from you.</p></div>';
+		delay(20000);
+		g1_div = '<div id="door"><p style="background-color:#00CED1;">Remeber You can Press and hold the RED button to start again.</p></div>';
+	} else g1_div = '<div id="door"><p style="background-color:#00ff00;">Press the RED button</p></div>';
+	
+	var HTMLDoc = HTML_top + g1_div + HTML_bottom;
+	console.log("HTMLDoc created.");
+	return HTMLDoc;
+	
+	//HTTPServer.route("/*", function(url, response) { 
+	//	response.send(HTMLDoc); 
+	//});
+}
+
+
+Title: Data Bucket (in Javascript)
+
+var port = 81;
+var server;
+var count = 0;
+
+function setup() {
+	// create server
+	server = new TCPServer();
+	
+	// when new client is connected
+	server.onNewClient = function(client) {
+	
+		Serial.println("new client: " + client.remoteIP()
+			+ ":" + client.remotePort());
+			
+		// when the client state changes
+		client.onConnectionChange = function(type) {
+			Serial.println("connection changed: " + type);
+		};
+		
+		// when receiving data from client
+		client.onReceive = function(data) {
+			// print it and then disconnect
+			Serial.println("received: " + client.remoteIP()
+				+ ":" + client.remotePort() + ", " + data);
+			//client.close();
+			saveData(data);
+		};
+		
+		// send a msg to client
+		//client.send("hello " + (count++));
+	};
+	
+	// start listening on port
+	Serial.println(server.listen(port));
+}
+
+function saveData(d) {
+	// write to disk
+	console.log("Saving door status ",d," to disk...");
+	//console.log(FileSystem.exists("/door_status.txt"));
+	var file = FileSystem.open('/door_status.txt',
+	File.WRITE | File.READ);
+	file.println(d);
+	file.close();
+}
+
+
