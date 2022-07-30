@@ -1,0 +1,184 @@
+// Creator: FHL
+
+from gpio import *
+from time import *
+from tcp import *
+
+
+numReps= 4						 	#number of reps
+numSets= 2							#total number of sets
+numsetsmin= str(numSets-1)
+timeRest= 10						#rest time in secs
+timeLegRaise= 12					#time in secs
+LR_d=timeLegRaise/9				#divided time for Leg raises
+
+client = TCPClient()
+lcd1 = 0
+
+g1 = digitalRead(0)
+	
+serverIP = "209.165.201.2"
+serverPort = 81
+
+print("Workout Starting")			
+
+
+def main():							#pin modes for components
+	pinMode(0,IN)
+	pinMode(1,OUT)
+	pinMode(2,OUT)
+	pinMode(3,OUT)
+	pinMode(4,OUT)
+	pinMode(5,OUT)
+
+
+def countdown():
+	customWrite(3,'3')
+	sleep(1)
+	customWrite(3,'2')
+	sleep(1)
+	customWrite(3,'1')
+
+def pushups():
+		digitalWrite(1,HIGH)
+		sleep(1)
+		digitalWrite(1,LOW)
+		digitalWrite(2,HIGH)
+		sleep(2.5)
+		digitalWrite(2,LOW)
+
+def legraises():		
+					customWrite(3,'LEG RAISES!')
+					customWrite(4, 180)
+					digitalWrite(5,LOW)
+					sleep(LR_d)
+					customWrite(4,160)
+					digitalWrite(5,HIGH)
+					sleep(LR_d)
+					customWrite(4,140)
+					digitalWrite(5,LOW)
+					sleep(LR_d)
+					customWrite(4,120)
+					digitalWrite(5,HIGH)
+					sleep(LR_d)
+					customWrite(4,100)	
+					digitalWrite(5,LOW)
+					sleep(LR_d)
+					customWrite(4,80)
+					digitalWrite(5,HIGH)
+					sleep(LR_d)
+					customWrite(4,60)
+					digitalWrite(5,LOW)
+					sleep(LR_d)
+					customWrite(4,40)
+					digitalWrite(5,HIGH)
+					sleep(LR_d)
+					customWrite(4,20)
+					digitalWrite(5,LOW)
+					sleep(LR_d)
+					customWrite(4,0)
+					digitalWrite(5,LOW)
+
+def onTCPConnectionChange(type):
+	print("connection changed: " + str(type))
+	
+def onTCPReceive(data):
+	print("received from: " + data);
+	client.send(data)
+
+#The REAL Deal
+def workout():
+	while True:
+		delay(1000)
+		customWrite(3, 'Hey you...\nLets GO')
+		delay(2000)
+		customWrite(3,'Press the Button\nTo Start')
+		client.onConnectionChange(onTCPConnectionChange)
+		client.onReceive(onTCPReceive)
+		print(client.connect(serverIP, serverPort))
+	# send updateeeeeeeeeeeeeeeeeeeeeeeeeeeee
+		g1 = 0
+		client.send(g1)
+		if(digitalRead(0,True)):
+			for n in range(0, 1):									#Push-ups  section
+				g1 = 1
+				client.send(g1)
+				print("Currently Workingout")
+				sleep(1)
+				customWrite(3,'Push-ups\nGet Ready')
+				sleep(3)
+				countdown()
+				sleep(1)
+				customWrite(3,'UNDERWAY!')
+				sleep(1)
+				digitalWrite(1,HIGH)
+				sleep(1)
+				digitalWrite(1,LOW)
+				digitalWrite(2,HIGH)
+				sleep(2.5)
+				digitalWrite(2,LOW)
+				pushups()
+				sleep(timeRest)
+				legraises()
+			
+			for n in range(1,(int(numsetsmin))):				#First Set (Push-ups & Leg Raises)
+				customWrite(3,'Nice work')
+				sleep(1)
+				customWrite(3,numrepsmin + 'more to go\nGet ready')
+				sleep(timeRest)
+				customWrite(3,'Push-ups')
+				sleep(2)
+				customWrite(3,'3')
+				sleep(1)
+				customWrite(3,'2')
+				sleep(1)
+				customWrite(3,'1')
+				sleep(1)
+				customWrite(3,'GO')
+				sleep(1)
+				customWrite(3,' ')
+
+				for m in range(0, int(numsetsmin)):			#Push-ups
+					digitalWrite(1,HIGH)
+					sleep(1)
+					digitalWrite(1,LOW)
+					digitalWrite(2,HIGH)
+					sleep(2.5)
+					digitalWrite(2,LOW)
+					pushups()
+					
+				for m in range(1):											#Leg Raises
+					customWrite(3,'Leg Raises\nGet ready')	
+					digitalWrite(2,LOW)
+					sleep(.5)
+					digitalWrite(5,HIGH)
+					sleep(.5)
+					digitalWrite(5,LOW)
+					sleep(5)
+					digitalWrite(5,HIGH)
+					legraises()
+
+			customWrite(3,'Great job\nAgain?')
+			sleep(5)
+			if(digitalRead(0,True)):
+				return repeat()
+			elif(digitalRead(0,True)):
+				customWrite(4,'Good Work Today')
+				sleep(2)
+			
+			pass
+
+	
+def repeat():
+	sleep(3)
+	customWrite(3,"You're a\nROCKSTAR")
+	sleep(3)
+	customWrite(3,"Lets go!")
+	sleep(3)
+	
+	return workout()
+
+
+if __name__ == "__main__":
+	main()
+	workout()
