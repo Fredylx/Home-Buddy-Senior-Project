@@ -1,4 +1,8 @@
-
+/*
+Author:		Fredy Lopez
+Created:	Spring Semester 2020
+Class:		IoT
+*/
 //Title: Data Bucket (in Javascript)
 
 var port = 81;
