@@ -148,15 +148,3 @@ function updateHTML() {
 	//	response.send(HTMLDoc); 
 	//});
 }
-
-
-	// write to disk
-	console.log("Saving door status ",d," to disk...");
-	//console.log(FileSystem.exists("/door_status.txt"));
-	var file = FileSystem.open('/door_status.txt',
-	File.WRITE | File.READ);
-	file.println(d);
-	file.close();
-}
-
-
