@@ -1,5 +1,6 @@
-
-Title: Data Bucket (in Javascript)
+//Title: Data Bucket (in Javascript)
+//Author: Fredy H Lopez
+//Type: JavaScript
 
 var port = 81;
 var server;
