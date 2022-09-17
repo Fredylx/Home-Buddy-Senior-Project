@@ -1,3 +1,11 @@
+'''
+Author:       Fredy H Lopez
+Title:        workout
+Date:         
+Style:        Python
+'''
+
+
 def workout(): while(True):
   delay(1000)
   customWrite(3, 'Hey you...\nLets GO') delay(2000)
