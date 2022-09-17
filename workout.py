@@ -3,6 +3,13 @@ Author:       Fredy H Lopez
 Title:        workout
 Date:         
 Style:        Python
+
+
+
+
+----------------------------- Work In Progress----------------------------
+this is a the script ment for the workout buddy simulation
+some erros still exist and will be solved.
 '''
 
 
