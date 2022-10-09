@@ -5,7 +5,7 @@ Date:
 Style:        Python
 
 ----------------------------- Work In Progress----------------------------
-this is a the script ment for the workout buddy simulation
+this is a the script ment for the workout buddy simulation. For IoT Introduction class.
 '''
 
 
