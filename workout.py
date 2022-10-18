@@ -6,6 +6,7 @@ Style:        Python
 
 ----------------------------- Work In Progress----------------------------
 this is a the script ment for the workout buddy simulation. For IoT Introduction class.
+was done during lockdown. Made for simulation in Packet Tracer or a real life Arduino or Raspberry Pi build
 '''
 
 
